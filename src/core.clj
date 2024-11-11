@@ -11,7 +11,8 @@
             [reitit.swagger    :as api-docs]
             [reitit.swagger-ui :as api-docs-ui]
             [reitit.dev.pretty :as pretty]
-            [reitit.ring.middleware.muuntaja   :as middleware-muuntaja]))
+            [reitit.ring.middleware.muuntaja   :as middleware-muuntaja]
+            [malli.core :as malli]))
 
 (defn post-handler
   [_]
@@ -65,12 +66,19 @@
     (reset! server nil)))
 
 (comment 
-  (require '[jsonista.core :as j])
+  (require '[jsonista.core :as j]
+           '[malli.core :as malli])
 
   (start)
 
   (stop)
   
+
+  (malli/validate [:map
+                   [:a int?]
+                   [:b string?]] 
+                  {:a 1 :b "sdadss"})
+
   (app {:request-method :post
         :uri "/api/v1/endpoint1"
         :body (j/write-value-as-string {:a 1 :b "sdadss"})})
