@@ -21,9 +21,21 @@
                     :status))))
   (testing "When posting has correct data form, returns 201 status (httpkit)"
     (is (== 201 (-> @(httpkit-client/post url {:body (j/write-value-as-string post-request)
-                                               :content-type :json})
+                                               :headers {"Content-Type" "application/json"}})
                     :status)))))
-
+ 
 (comment
   (run-test endpoint1-post-test)
+
+  (hato-client/post url {:body (j/write-value-as-string {:a "dsd" :b 3232})
+                         :content-type :json})
+  
+  @(httpkit-client/post url {:body (j/write-value-as-bytes post-request)
+                             :content-type :json})
+  
+  @(httpkit-client/post url {:form-params post-request
+                             :content-type :json})
+  
+  @(httpkit-client/post url {:form-params post-request
+                             :content-type :json})
   )

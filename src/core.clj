@@ -12,7 +12,8 @@
             [reitit.swagger-ui :as api-docs-ui]
             [reitit.dev.pretty :as pretty]
             [reitit.ring.middleware.muuntaja   :as middleware-muuntaja]
-            [malli.core :as malli]))
+            [malli.core :as malli]
+            [reitit.ring.middleware.exception :as exception]))
 
 (defn post-handler
   [_]
@@ -42,9 +43,12 @@
             :muuntaja   m/instance
             :middleware [api-docs/swagger-feature 
                          parameters/parameters-middleware 
-                         middleware-muuntaja/format-middleware  
+                         middleware-muuntaja/format-negotiate-middleware
+                         middleware-muuntaja/format-response-middleware  
+                         exception/exception-middleware 
+                         middleware-muuntaja/format-request-middleware
                          coercion/coerce-response-middleware 
-                         coercion/coerce-request-middleware 
+                         coercion/coerce-request-middleware
                          coercion/coerce-exceptions-middleware]} 
      :exception pretty/exception
      :validate spec/validate})
@@ -78,9 +82,11 @@
                    [:a int?]
                    [:b string?]] 
                   {:a 1 :b "sdadss"})
-
+  
   (app {:request-method :post
+        :content-type "application/json"
         :uri "/api/v1/endpoint1"
-        :body (j/write-value-as-string {:a 1 :b "sdadss"})})
-   
+        :body (j/write-value-as-bytes {:a 1 :b "sdadss"})}) 
+
+    
   )
